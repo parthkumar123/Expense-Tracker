@@ -3,11 +3,9 @@
 const express = require("express");
 const router = express.Router();
 
-const {
-    getUserList,
-} = require("../controllers/user");
+const dashboardController = require("../controllers/dashboard");
 
 router.route("/")
-    .get(getUserList);
+    .get(dashboardController.getGroupList);
 
 module.exports = router;

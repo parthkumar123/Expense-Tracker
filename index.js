@@ -1,28 +1,45 @@
 "use strict";
+// Dynamic port binding.
+const path = require("path");
+require("dotenv").config({
+    path: path.join(__dirname, `/env/${process.env.NODE_ENV}.env`)
+});
+
 // Description: This file is the entry point of the application.
 const express = require("express");
 const app = express();
+const passport = require('passport');
+
+// Configure session
+const session = require('express-session');
+app.use(session({
+    resave: false,
+    saveUninitialized: true,
+    secret: process.env.SESSION_SECRET
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+require('./passport');
+
+// configure ejs engine
+app.set('view engine', 'ejs');
 
 // Body parser middleware
 const bodyParser = require("body-parser");
 app.use(bodyParser.json());
-
-// Dynamic port binding.
-const path = require("path");
-const dotenv = require("dotenv");
-dotenv.config({
-    path: path.join(__dirname, `/env/${process.env.NODE_ENV}.env`)
-})
 
 // Connect to MongoDB
 const connectMongoDB = require('./connection');
 connectMongoDB(process.env.MONGO_URI);
 
 // Routes
-const userRoute = require("./routes/user");
+const authRoute = require("./routes/auth");
+const dashboardRoute = require("./routes/dashboard");
 
-// Use routes
-app.use("/users", userRoute);
+// Add routes
+app.use("/auth", authRoute);
+app.use("/dashboard", dashboardRoute);
 
 // Port configuration
 const port = process.env.PORT || 3000;
@@ -30,4 +47,4 @@ const port = process.env.PORT || 3000;
 app.listen(port, (err) => {
     if (err) throw err;
     console.log(`Server is running on port ${port}`);
-})
+});

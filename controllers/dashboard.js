@@ -1,10 +1,14 @@
 "user strict";
+const User = require("../models/user");
 
 // Handle user login
-async function getUserList(req, res) {
+async function getGroupList(req, res) {
     try {
+        const userList = await User.find();
+
         res.status(200).json({
-            message: 'User details fetched successfully'
+            status: true,
+            data: req.user
         });
     } catch (error) {
         // Handle errors
@@ -15,5 +19,5 @@ async function getUserList(req, res) {
 }
 
 module.exports = {
-    getUserList,
+    getGroupList,
 }
